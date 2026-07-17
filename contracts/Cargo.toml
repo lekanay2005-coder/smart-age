@@ -1,0 +1,26 @@
+[package]
+name = "stellar_dapp_contract"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+doctest = false
+
+[dependencies]
+soroban-sdk = "=23.0.0"
+
+[dev-dependencies]
+soroban-sdk = { version = "23.0.0", features = ["testutils"] }
+
+[patch.crates-io]
+ed25519-dalek = { git = "https://github.com/dalek-cryptography/curve25519-dalek.git", tag = "ed25519-2.2.0", package = "ed25519-dalek" }
+
+
+[profile.release]
+opt-level = "z"
+overflow-checks = true
+debug = 0
+strip = "debuginfo"
+debug-assertions = false
