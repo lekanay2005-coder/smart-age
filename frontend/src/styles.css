@@ -124,3 +124,29 @@ footer {
   color: var(--muted);
   font-size: 13px;
 }
+
+.muted {
+  color: var(--muted);
+}
+
+.ids {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0 0;
+}
+
+.ids .link {
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 6px 12px;
+}
+
+.view {
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.7;
+}

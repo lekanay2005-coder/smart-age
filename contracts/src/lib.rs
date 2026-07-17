@@ -21,6 +21,7 @@ pub struct Payment {
 pub enum DataKey {
     Payment(u64),
     Counter,
+    PayerPayments(Address),
 }
 
 #[contractclient(name = "TokenClient")]
@@ -78,6 +79,15 @@ impl Payments {
             .instance()
             .set(&DataKey::Payment(counter), &payment);
         env.storage().instance().set(&DataKey::Counter, &counter);
+
+        let key = DataKey::PayerPayments(payer.clone());
+        let mut ids: Vec<u64> = env
+            .storage()
+            .persistent()
+            .get(&key)
+            .unwrap_or(Vec::new(&env));
+        ids.push_back(counter);
+        env.storage().persistent().set(&key, &ids);
 
         TokenClient::new(&env, &token).transfer(&payer, &env.current_contract_address(), &amount);
 
@@ -158,6 +168,14 @@ impl Payments {
             .instance()
             .get(&DataKey::Payment(payment_id))
             .unwrap_or_else(|| panic!("unknown payment"))
+    }
+
+    /// List all payment ids created by `payer`.
+    pub fn list(env: Env, payer: Address) -> Vec<u64> {
+        env.storage()
+            .persistent()
+            .get(&DataKey::PayerPayments(payer))
+            .unwrap_or(Vec::new(&env))
     }
 }
 

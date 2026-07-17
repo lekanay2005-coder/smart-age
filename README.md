@@ -30,6 +30,7 @@ smart-age/
 | `release(payment_id)` | payer | Distributes funds to recipients by share (last recipient absorbs rounding). |
 | `refund(payment_id)` | payer | Returns the full amount to the payer. |
 | `get(payment_id)` | none  | Read-only view of a payment. |
+| `list(payer)` | none  | All payment ids created by `payer` (used by "My Payments"). |
 
 Validation guards against empty/unequal recipients, non-positive amounts,
 zero shares, and double-settling.

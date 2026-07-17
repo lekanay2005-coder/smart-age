@@ -97,3 +97,21 @@ fn cannot_release_twice() {
     client.release(&id);
     client.release(&id);
 }
+
+#[test]
+fn list_returns_payer_payments() {
+    let (env, client, _contract, admin, payer, r1, r2) = setup();
+    let (token, _token_client, token_admin) = create_token(&env, &admin);
+    token_admin.mint(&payer, &200);
+
+    let recipients = vec![&env, r1.clone(), r2.clone()];
+    let shares = vec![&env, 1u32, 1u32];
+    let a = client.create(&payer, &token, &recipients, &shares, &100);
+    let b = client.create(&payer, &token, &recipients, &shares, &100);
+
+    let ids = client.list(&payer);
+    assert_eq!(ids.len(), 2);
+    assert_eq!(ids.get(0).unwrap(), a);
+    assert_eq!(ids.get(1).unwrap(), b);
+}
+

@@ -6,6 +6,7 @@ import {
   releasePayment,
   refundPayment,
   getPayment,
+  listPayments,
   PaymentView,
 } from "./contract";
 
@@ -28,6 +29,7 @@ export default function App() {
 
   const [lookupId, setLookupId] = useState("");
   const [view, setView] = useState<PaymentView | null>(null);
+  const [myIds, setMyIds] = useState<number[]>([]);
 
   function updateRecipient(i: number, patch: Partial<Recipient>) {
     setRecipients((rs) => rs.map((r, idx) => (idx === i ? { ...r, ...patch } : r)));
@@ -66,6 +68,31 @@ export default function App() {
     try {
       const p = await getPayment(Number(lookupId));
       setView(p);
+    } catch (e: any) {
+      setMsg(`Lookup error: ${e?.message || e}`);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function handleLoadMine() {
+    if (!address) return;
+    setBusy(true);
+    try {
+      const ids = await listPayments(address);
+      setMyIds(ids);
+    } catch (e: any) {
+      setMsg(`List error: ${e?.message || e}`);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function openPayment(id: number) {
+    setLookupId(String(id));
+    setBusy(true);
+    try {
+      setView(await getPayment(id));
     } catch (e: any) {
       setMsg(`Lookup error: ${e?.message || e}`);
     } finally {
@@ -219,6 +246,26 @@ export default function App() {
       </section>
 
       {msg && <p className="msg">{msg}</p>}
+
+      {address && (
+        <section className="card">
+          <h2>My Payments</h2>
+          <button onClick={handleLoadMine} disabled={busy}>
+            Load my payments
+          </button>
+          <ul className="ids">
+            {myIds.map((id) => (
+              <li key={id}>
+                <button className="link" onClick={() => openPayment(id)}>
+                  #{id}
+                </button>
+              </li>
+            ))}
+            {myIds.length === 0 && <li className="muted">No payments yet</li>}
+          </ul>
+        </section>
+      )}
+
       <footer>Built on Stellar · Soroban smart contracts</footer>
     </div>
   );

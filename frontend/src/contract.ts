@@ -125,6 +125,20 @@ export async function getPayment(id: number): Promise<PaymentView> {
   return decodePayment(scVal);
 }
 
+export async function listPayments(payer: string): Promise<number[]> {
+  const contract = new Contract(assertContract());
+  const tx = baseBuilder(payer).addOperation(
+    contract.call("list", Address.fromString(payer).toScVal())
+  );
+  const res = await server.simulateTransaction(tx.build());
+  // @ts-expect-error result types
+  const scVal = res.result?.retval;
+  if (!scVal) return [];
+  return scVal
+    .value()
+    .map((v: any) => Number(scValToNative(v)));
+}
+
 function decodePayment(v: any): PaymentView {
   const map = v.value();
   const get = (k: string) => map.find((e: any) => e.key().toString() === k)?.val();
