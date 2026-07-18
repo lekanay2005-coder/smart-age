@@ -9,10 +9,10 @@ crate-type = ["cdylib"]
 doctest = false
 
 [dependencies]
-soroban-sdk = "=23.0.0"
+soroban-sdk = "=27.0.0"
 
 [dev-dependencies]
-soroban-sdk = { version = "23.0.0", features = ["testutils"] }
+soroban-sdk = { version = "27.0.0", features = ["testutils"] }
 
 # NOTE: do NOT remove this patch. soroban-env-host 23.0.1 pulls a broken
 # ed25519-dalek 3.0.0; pinning to the 2.2.0 tag keeps the build working.
