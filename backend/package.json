@@ -12,7 +12,7 @@
     "typecheck": "node --check src/server.js && node --check src/indexer.js && node --check src/db.js && node --check src/stellar.js"
   },
   "dependencies": {
-    "@stellar/stellar-sdk": "^13.1.0",
+    "@stellar/stellar-sdk": "^16.0.1",
     "better-sqlite3": "^11.5.0",
     "express": "^4.21.1"
   }
