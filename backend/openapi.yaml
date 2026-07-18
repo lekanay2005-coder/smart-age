@@ -1,0 +1,122 @@
+openapi: 3.0.3
+info:
+  title: SmartAge Indexer API
+  description: >
+    Read-only REST API over the SmartAge Payments contract, backed by the
+    off-chain indexer. All amounts are returned as strings to preserve
+    i128 precision.
+  version: 0.1.0
+servers:
+  - url: http://localhost:3000
+    description: Local indexer
+
+paths:
+  /health:
+    get:
+      summary: Liveness + active network/contract
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  network: { type: string }
+                  contractId: { type: string }
+
+  /payments:
+    get:
+      summary: List indexed payments
+      parameters:
+        - in: query
+          name: payer
+          schema: { type: string }
+          description: Filter by payer address
+        - in: query
+          name: released
+          schema: { type: boolean }
+          description: Filter by settled state
+        - in: query
+          name: limit
+          schema: { type: integer, default: 20 }
+        - in: query
+          name: offset
+          schema: { type: integer, default: 0 }
+      responses:
+        "200":
+          description: Paginated payment list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentPage"
+
+  /payments/{id}:
+    get:
+      summary: Get a single payment by id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Payment found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Payment"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /stats:
+    get:
+      summary: Aggregate stats
+      responses:
+        "200":
+          description: Count + volume + released count
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Stats"
+
+components:
+  schemas:
+    Payment:
+      type: object
+      properties:
+        id: { type: integer }
+        payer: { type: string }
+        token: { type: string }
+        amount: { type: string }
+        recipients: { type: array, items: { type: string } }
+        shares: { type: array, items: { type: integer } }
+        released: { type: boolean }
+        refunded: { type: boolean }
+        createdAt: { type: integer, nullable: true }
+        updatedAt: { type: integer, nullable: true }
+        firstSeenAt: { type: integer }
+    PaymentPage:
+      type: object
+      properties:
+        total: { type: integer }
+        limit: { type: integer }
+        offset: { type: integer }
+        rows:
+          type: array
+          items: { $ref: "#/components/schemas/Payment" }
+    Stats:
+      type: object
+      properties:
+        count: { type: integer }
+        volume: { type: string }
+        releasedCount: { type: integer, nullable: true }
+    Error:
+      type: object
+      properties:
+        error: { type: string }

@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  contracts:
+    name: Contracts (build + test + lint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: contracts
+      - name: Format check
+        run: cd contracts && cargo fmt --all -- --check
+      - name: Clippy
+        run: cd contracts && cargo clippy --all-targets -- -D warnings
+      - name: Test
+        run: cd contracts && cargo test
+      - name: Build wasm
+        run: cd contracts && cargo build --target wasm32-unknown-unknown --release
+      - name: Upload wasm
+        uses: actions/upload-artifact@v4
+        with:
+          name: stellar_dapp_contract.wasm
+          path: contracts/target/wasm32-unknown-unknown/release/stellar_dapp_contract.wasm
+      - name: Wasm size check
+        run: |
+          SIZE=$(stat -c%s contracts/target/wasm32-unknown-unknown/release/stellar_dapp_contract.wasm)
+          echo "wasm size: $SIZE bytes"
+          MAX=200000
+          if [ "$SIZE" -gt "$MAX" ]; then
+            echo "ERROR: wasm ($SIZE) exceeds budget ($MAX)" >&2
+            exit 1
+          fi
+
+  frontend:
+    name: Frontend (install + typecheck + build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install
+        working-directory: frontend
+        run: npm ci
+      - name: Typecheck
+        working-directory: frontend
+        run: npm run typecheck
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: cargo audit
+        uses: rustsec/audit-check@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: npm audit
+        working-directory: frontend
+        run: npm audit --audit-level=high

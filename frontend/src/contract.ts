@@ -1,17 +1,18 @@
 import {
   Account,
   Contract,
-  SorobanRpc,
   TransactionBuilder,
+  Transaction,
   xdr,
   Address,
   nativeToScVal,
   scValToNative,
+  rpc,
 } from "@stellar/stellar-sdk";
 import { ACTIVE_NETWORK, NETWORKS, CONTRACT_ADDRESS } from "./config";
 
 const net = NETWORKS[ACTIVE_NETWORK];
-const server = new SorobanRpc.Server(net.rpcUrl, { allowHttp: true });
+const server = new rpc.Server(net.rpcUrl, { allowHttp: true });
 
 function assertContract() {
   if (!CONTRACT_ADDRESS) {
@@ -22,22 +23,23 @@ function assertContract() {
   return CONTRACT_ADDRESS;
 }
 
-// Submit an assembled transaction, signing via Freighter.
-export async function submit(
-  tx: TransactionBuilder,
-  signer: string
-): Promise<string> {
+// Submit a built transaction: simulate, sign via Freighter, send, poll.
+export async function submit(built: Transaction, payer: string): Promise<string> {
+  void payer; // payer authorizes inside Freighter during signing
   const api = window.freighter;
   if (!api) throw new Error("Freighter not available");
 
-  const prepared = await server.prepareTransaction(tx.build());
-  const signedXdr = await api.signTransaction(prepared.toEnvelope().toXDR(), {
+  const prepared = await server.prepareTransaction(built);
+  const simulated = await server.simulateTransaction(prepared);
+  const assembled = rpc.assembleTransaction(prepared, simulated);
+
+  const signedXdr = await api.signTransaction(assembled.build().toEnvelope().toXDR(), {
     networkPassphrase: net.networkPassphrase,
   });
-  const signed = xdr.TransactionEnvelope.fromXDR(signedXdr, "base64");
+  const signed = xdr.TransactionEnvelope.fromXDR(signedXdr, "base64") as unknown as Transaction;
   const result = await server.sendTransaction(signed);
-  if (result.status !== "PENDING" && result.status !== "SUCCESS") {
-    throw new Error(`Submit failed: ${result.status}`);
+  if (result.status === "ERROR") {
+    throw new Error(`Submit rejected: ${result.status}`);
   }
 
   // Poll for confirmation.
@@ -76,7 +78,7 @@ export async function createPayment(
       nativeToScVal(amount, { type: "i128" })
     )
   );
-  return submit(tx, payer);
+  return submit(tx.build(), payer);
 }
 
 function vecAddresses(addrs: string[]) {
@@ -92,7 +94,7 @@ export async function releasePayment(payer: string, id: number): Promise<string>
   const tx = baseBuilder(payer).addOperation(
     contract.call("release", nativeToScVal(id, { type: "u64" }))
   );
-  return submit(tx, payer);
+  return submit(tx.build(), payer);
 }
 
 export async function refundPayment(payer: string, id: number): Promise<string> {
@@ -100,10 +102,11 @@ export async function refundPayment(payer: string, id: number): Promise<string> 
   const tx = baseBuilder(payer).addOperation(
     contract.call("refund", nativeToScVal(id, { type: "u64" }))
   );
-  return submit(tx, payer);
+  return submit(tx.build(), payer);
 }
 
 export interface PaymentView {
+  id: number;
   payer: string;
   recipients: string[];
   shares: number[];
@@ -119,10 +122,12 @@ export async function getPayment(id: number): Promise<PaymentView> {
     contract.call("get", nativeToScVal(id, { type: "u64" }))
   );
   const res = await server.simulateTransaction(tx.build());
-  // @ts-expect-error result types
+  if (!rpc.Api.isSimulationSuccess(res)) {
+    throw new Error(`Simulation failed: ${res.error}`);
+  }
   const scVal = res.result?.retval;
   if (!scVal) throw new Error("No result from contract");
-  return decodePayment(scVal);
+  return decodePayment(scVal, id);
 }
 
 export async function listPayments(payer: string): Promise<number[]> {
@@ -131,7 +136,9 @@ export async function listPayments(payer: string): Promise<number[]> {
     contract.call("list", Address.fromString(payer).toScVal())
   );
   const res = await server.simulateTransaction(tx.build());
-  // @ts-expect-error result types
+  if (!rpc.Api.isSimulationSuccess(res)) {
+    return [];
+  }
   const scVal = res.result?.retval;
   if (!scVal) return [];
   return scVal
@@ -139,10 +146,11 @@ export async function listPayments(payer: string): Promise<number[]> {
     .map((v: any) => Number(scValToNative(v)));
 }
 
-function decodePayment(v: any): PaymentView {
+function decodePayment(v: any, id: number): PaymentView {
   const map = v.value();
   const get = (k: string) => map.find((e: any) => e.key().toString() === k)?.val();
   return {
+    id,
     payer: Address.fromScVal(get("payer")).toString(),
     recipients: get("recipients")
       .value()

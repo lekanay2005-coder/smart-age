@@ -1,0 +1,23 @@
+{
+  "name": "smart-age",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Stellar/Soroban escrow split-payments dApp (contracts + frontend + backend)",
+  "license": "MIT",
+  "scripts": {
+    "test": "./scripts/test.sh",
+    "test:contracts": "cd contracts && cargo test",
+    "build:contract": "cd contracts && cargo build --target wasm32-unknown-unknown --release",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:frontend": "cd frontend && npm run build",
+    "backend:install": "cd backend && npm install",
+    "backend:migrate": "cd backend && npm run migrate",
+    "backend:index": "cd backend && npm run index",
+    "backend:start": "cd backend && npm start",
+    "deploy": "NETWORK=futurenet ./scripts/deploy.sh"
+  },
+  "workspaces": [
+    "frontend",
+    "backend"
+  ]
+}

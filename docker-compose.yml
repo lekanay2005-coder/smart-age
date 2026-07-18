@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  smartage:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      CONTRACT_ID: "${CONTRACT_ID:-}"
+      BACKEND_NETWORK: "${BACKEND_NETWORK:-futurenet}"
+      VITE_NETWORK: "${VITE_NETWORK:-futurenet}"
+      RATE_LIMIT: "${RATE_LIMIT:-100}"
+    volumes:
+      - smartage-data:/app/server/data
+    restart: unless-stopped
+
+volumes:
+  smartage-data:

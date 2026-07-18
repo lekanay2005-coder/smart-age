@@ -1,0 +1,19 @@
+{
+  "name": "smart-age-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "SmartAge payment indexer + REST API (off-chain backend)",
+  "scripts": {
+    "start": "node src/server.js",
+    "index": "node src/indexer.js",
+    "dev": "node --watch src/server.js",
+    "migrate": "node src/db.js",
+    "typecheck": "node --check src/server.js && node --check src/indexer.js && node --check src/db.js && node --check src/stellar.js"
+  },
+  "dependencies": {
+    "@stellar/stellar-sdk": "^13.1.0",
+    "better-sqlite3": "^11.5.0",
+    "express": "^4.21.1"
+  }
+}
