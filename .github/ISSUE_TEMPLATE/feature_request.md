@@ -1,5 +1,5 @@
 name: ✨ Feature request
-description: Suggest a new capability for SmartAge
+description: Suggest a new capability for SplitLock
 title: "[Feature] <short summary>"
 labels: ["enhancement"]
 body:

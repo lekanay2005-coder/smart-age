@@ -1,9 +1,9 @@
 {
-  "name": "smart-age-backend",
+  "name": "splitlock-backend",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "SmartAge payment indexer + REST API (off-chain backend)",
+  "description": "SplitLock payment indexer + REST API (off-chain backend)",
   "scripts": {
     "start": "node src/server.js",
     "index": "node src/indexer.js",

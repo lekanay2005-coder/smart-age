@@ -1,4 +1,4 @@
-# Note — SmartAge Contributor Onboarding
+# Note — SplitLock Contributor Onboarding
 
 > **Purpose:** A starter list of issues and tasks for incoming AI-engineers and
 > human contributors. Everything here is **beginner-friendly** — you do not need
@@ -101,7 +101,7 @@ patch** or the build breaks.
   - File: `App.tsx`. Difficulty: easy.
 
 - [ ] **#18 Add a favicon and app title**
-  - `frontend/index.html` likely uses defaults. Add a SmartAge favicon + title.
+  - `frontend/index.html` likely uses defaults. Add a SplitLock favicon + title.
   - Difficulty: trivial.
 
 - [ ] **#19 Write a one-paragraph project description for the repo**

@@ -1,7 +1,7 @@
 # Code of Conduct
 
 We adopt the [Contributor Covenant](https://www.contributor-covenant.org)
-v2.1 to make SmartAge a welcoming, harassment-free project for everyone.
+v2.1 to make SplitLock a welcoming, harassment-free project for everyone.
 
 ## Our Pledge
 

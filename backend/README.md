@@ -1,6 +1,6 @@
-# SmartAge Backend
+# SplitLock Backend
 
-Off-chain services for the SmartAge escrow split-payments dApp. This backend
+Off-chain services for the SplitLock escrow split-payments dApp. This backend
 **does not** replace the Soroban contract (see `../contracts`) or the React UI
 (see `../frontend`). It adds the supporting infrastructure those need:
 

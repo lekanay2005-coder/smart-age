@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: SmartAge Indexer API
+  title: SplitLock Indexer API
   description: >
-    Read-only REST API over the SmartAge Payments contract, backed by the
+    Read-only REST API over the SplitLock Payments contract, backed by the
     off-chain indexer. All amounts are returned as strings to preserve
     i128 precision.
   version: 0.1.0

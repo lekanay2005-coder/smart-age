@@ -1,4 +1,4 @@
-// Shared configuration for the SmartAge backend (indexer + API).
+// Shared configuration for the SplitLock backend (indexer + API).
 // All values come from environment variables with sensible defaults.
 
 export const CONFIG = {

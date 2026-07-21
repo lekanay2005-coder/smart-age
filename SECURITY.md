@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-SmartAge is early-stage software. The `main` branch is the only supported
+SplitLock is early-stage software. The `main` branch is the only supported
 version. Smart contracts live under `contracts/` and handle real (testnet)
 value — treat them as experimental.
 
@@ -18,7 +18,7 @@ bypass auth, or block refunds), **please do not open a public issue.**
 Instead, report it privately to the maintainer:
 
 - Email: **dclife16q@gmail.com**
-- Subject: `[SmartAge Security] <short description>`
+- Subject: `[SplitLock Security] <short description>`
 
 You will get a response within **72 hours**. Once the issue is confirmed and a
 fix is prepared, we will coordinate a disclosure timeline with you.

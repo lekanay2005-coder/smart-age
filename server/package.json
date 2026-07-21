@@ -1,9 +1,9 @@
 {
-  "name": "smart-age-server",
+  "name": "splitlock-server",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "SmartAge unified server — frontend serving + REST API + contract indexer",
+  "description": "SplitLock unified server — frontend serving + REST API + contract indexer",
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",

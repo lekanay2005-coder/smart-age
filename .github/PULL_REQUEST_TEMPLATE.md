@@ -1,5 +1,5 @@
 name: 📦 Pull Request
-description: Submit a change to SmartAge
+description: Submit a change to SplitLock
 title: "[<area>] <short summary>"
 labels: []
 body:

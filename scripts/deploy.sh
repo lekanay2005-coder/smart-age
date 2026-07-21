@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploy the SmartAge Payments contract to a Stellar network.
+# Deploy the SplitLock Payments contract to a Stellar network.
 #
 # Requires the Stellar CLI: https://developers.stellar.org/docs/tools/cli/install
 # and a funded account configured for the chosen network.

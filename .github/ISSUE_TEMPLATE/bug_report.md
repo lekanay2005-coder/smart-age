@@ -1,5 +1,5 @@
 name: 🐛 Bug report
-description: Report a problem with SmartAge (contract, frontend, or backend)
+description: Report a problem with SplitLock (contract, frontend, or backend)
 title: "[Bug] <short summary>"
 labels: ["bug"]
 body:

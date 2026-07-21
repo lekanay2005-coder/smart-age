@@ -1,6 +1,6 @@
-# Contributing to SmartAge
+# Contributing to SplitLock
 
-Thanks for helping build SmartAge — a Stellar/Soroban escrow split-payments dApp.
+Thanks for helping build SplitLock — a Stellar/Soroban escrow split-payments dApp.
 This guide explains how to pick up work and open a clean PR.
 
 ## Where the work lives

@@ -172,7 +172,7 @@ export default function App() {
       <div className="orb orb--2" aria-hidden="true" />
       <div className="orb orb--3" aria-hidden="true" />
       <header>
-        <h1>SmartAge</h1>
+        <h1>SplitLock</h1>
         <p className="sub">Stellar escrow split-payments · Soroban DeFi</p>
         <div className="net">
           <span className="dot" aria-hidden="true" />
@@ -386,7 +386,7 @@ export default function App() {
 
       <footer>
         Built on Stellar · Soroban smart contracts ·{" "}
-        <a href="https://github.com/your-org/smart-age" target="_blank" rel="noreferrer">
+        <a href="https://github.com/your-org/splitlock" target="_blank" rel="noreferrer">
           Source
         </a>{" "}
         · MIT License

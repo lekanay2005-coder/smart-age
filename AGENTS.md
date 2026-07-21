@@ -1,6 +1,6 @@
 # AGENTS.md — For AI Engineers & Coding Agents
 
-This file helps automated agents work on SmartAge safely and productively.
+This file helps automated agents work on SplitLock safely and productively.
 
 ## What this project is
 

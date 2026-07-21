@@ -51,7 +51,7 @@ async function main() {
       if (req.path.startsWith("/api")) return;
       res.status(200).type("html").send(`
         <html><body style="background:#020408;color:#22e694;font-family:system-ui;display:flex;align-items:center;justify-content:center;min-height:100dvh;flex-direction:column;gap:8px;text-align:center;padding:20px">
-          <h1>SmartAge</h1>
+          <h1>SplitLock</h1>
           <p style="color:#6c8a9e">Server is running.</p>
           <p style="color:#6c8a9e;font-size:13px">Build the frontend with <code>cd frontend && npm run build</code> then restart.</p>
           <p style="color:#6c8a9e;font-size:13px">API: <a href="/api/stats" style="color:#38bdf8">/api/stats</a></p>
@@ -61,7 +61,7 @@ async function main() {
   }
 
   app.listen(CONFIG.port, () => {
-    console.log(`[server] SmartAge unified server running on :${CONFIG.port}`);
+    console.log(`[server] SplitLock unified server running on :${CONFIG.port}`);
     console.log(`[server] network=${CONFIG.network} contract=${CONFIG.contractId || "(not set)"}`);
   });
 }

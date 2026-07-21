@@ -1,5 +1,5 @@
 {
-  "name": "smart-age",
+  "name": "splitlock",
   "version": "0.1.0",
   "private": true,
   "description": "Stellar/Soroban escrow split-payments dApp (contracts + frontend + backend)",

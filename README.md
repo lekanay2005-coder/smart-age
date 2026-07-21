@@ -1,16 +1,16 @@
-# SmartAge — Stellar Escrow Split-Payments dApp
+# SplitLock — Stellar Escrow Split-Payments dApp
 
-[![CI](https://github.com/your-org/smart-age/actions/workflows/ci.yml/badge.svg)](https://github.com/your-org/smart-age/actions/workflows/ci.yml)
+[![CI](https://github.com/lekanay2005-coder/splitlock-app/actions/workflows/ci.yml/badge.svg)](https://github.com/lekanay2005-coder/splitlock-app/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**What it does:** SmartAge is a Web3 dApp on **Stellar** that lets a payer lock
+**What it does:** SplitLock is a Web3 dApp on **Stellar** that lets a payer lock
 a token into an on-chain escrow and later either **split it proportionally
 across multiple recipients** or **refund it** — a reusable "escrow
 split-payment" primitive for payroll, group payments, dividends, reimbursements,
 and any scenario where funds should be held safely before distribution.
 
 > 🌱 New here? Start with [`note.md`](note.md) (onboarding) and grab a
-> [good first issue](https://github.com/your-org/smart-age/labels/good%20first%20issue).
+> [good first issue](https://github.com/your-org/splitlock/labels/good%20first%20issue).
 > The full task list lives in [`front-end.md`](front-end.md),
 > [`back-end.md`](back-end.md), and [`contracts.md`](contracts.md).
 
@@ -33,7 +33,7 @@ exclusive).
 ## What's in this repo
 
 ```
-smart-age/
+splitlock/
 ├── contracts/        # Soroban smart contract (Rust)
 │   ├── src/lib.rs    # Payments contract: create / release / refund / get / list / payment_count / stats
 │   ├── src/test.rs   # 14 unit tests (escrow, refund, double-settle, guards, events)
@@ -164,7 +164,7 @@ contract id, and writes it to `.contract/<network>.id`.
 - **Tooling:** Stellar CLI 27
 
 ## Contributing
-SmartAge is open source and welcomes contributors of all levels. Pick any
+SplitLock is open source and welcomes contributors of all levels. Pick any
 unchecked item from the issue tracker files and open a PR:
 
 - [`front-end.md`](front-end.md) — UI/UX, wallet, a11y, tooling
