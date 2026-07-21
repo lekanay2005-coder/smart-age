@@ -15,7 +15,7 @@ A Stellar/Soroban **escrow split-payments** dApp:
 ```bash
 # Contracts
 cd contracts && cargo fmt --check && cargo clippy -- -D warnings && cargo test
-cargo build --target wasm32-unknown-unknown --release
+cargo build --target wasm32v1-none --release
 
 # Frontend
 cd frontend && npm install && npm run typecheck && npm run lint && npm run build

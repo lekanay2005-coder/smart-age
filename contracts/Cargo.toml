@@ -8,14 +8,20 @@ publish = false
 crate-type = ["cdylib"]
 doctest = false
 
+# NOTE: Build for wasm32v1-none (not wasm32-unknown-unknown) when using
+# Rust 1.82+. The wasm32-unknown-unknown target in recent Rust has
+# reference-types and multi-value enabled that are incompatible with Soroban.
+#   cargo build --target wasm32v1-none --release
+
 [dependencies]
-soroban-sdk = "=23.0.0"
+soroban-sdk = "=27.0.1"
 
 [dev-dependencies]
-soroban-sdk = { version = "23.0.0", features = ["testutils"] }
+soroban-sdk = { version = "=27.0.1", features = ["testutils"] }
 
-# NOTE: do NOT remove this patch. soroban-env-host 23.0.1 pulls a broken
-# ed25519-dalek 3.0.0; pinning to the 2.2.0 tag keeps the build working.
+# NOTE: soroban-env-host 23.0.1 pulled a broken ed25519-dalek 3.0.0.
+# The ed25519-dalek issue may be resolved in newer versions, but keep this
+# patch as a safety net.
 [patch.crates-io]
 ed25519-dalek = { git = "https://github.com/dalek-cryptography/curve25519-dalek.git", tag = "ed25519-2.2.0", package = "ed25519-dalek" }
 

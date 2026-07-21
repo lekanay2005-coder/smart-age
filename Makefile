@@ -18,7 +18,7 @@ help:
 
 .PHONY: build-contract
 build-contract:
-	cd contracts && cargo build --target wasm32-unknown-unknown --release
+	cd contracts && cargo build --target wasm32v1-none --release
 
 .PHONY: test-contracts
 test-contracts:

@@ -64,7 +64,7 @@ fn creates_and_releases_payment() {
     let recipients = vec![&env, r1.clone(), r2.clone()];
     let shares = vec![&env, 1u32, 3u32];
 
-    let id = client.create(&payer, &token, &recipients, &shares, &1000);
+    let id = client.create(&payer, &token, &recipients, &shares, &1000, &0);
     assert!(!client.get(&id).released);
 
     // Funds pulled into escrow.
@@ -88,7 +88,7 @@ fn refund_returns_funds_to_payer() {
     let recipients = vec![&env, r1, r2];
     let shares = vec![&env, 1u32, 1u32];
 
-    let id = client.create(&payer, &token, &recipients, &shares, &500);
+    let id = client.create(&payer, &token, &recipients, &shares, &500, &0);
     client.refund(&id);
 
     let p = client.get(&id);
@@ -106,7 +106,7 @@ fn cannot_release_twice() {
     token_admin.mint(&payer, &100);
     let recipients = vec![&env, r1, r2];
     let shares = vec![&env, 1u32, 1u32];
-    let id = client.create(&payer, &token, &recipients, &shares, &100);
+    let id = client.create(&payer, &token, &recipients, &shares, &100, &0);
     client.release(&id);
     client.release(&id);
 }
@@ -119,8 +119,8 @@ fn list_returns_payer_payments() {
 
     let recipients = vec![&env, r1.clone(), r2.clone()];
     let shares = vec![&env, 1u32, 1u32];
-    let a = client.create(&payer, &token, &recipients, &shares, &100);
-    let b = client.create(&payer, &token, &recipients, &shares, &100);
+    let a = client.create(&payer, &token, &recipients, &shares, &100, &0);
+    let b = client.create(&payer, &token, &recipients, &shares, &100, &0);
 
     let ids = client.list(&payer);
     assert_eq!(ids.len(), 2);
@@ -135,7 +135,7 @@ fn rejects_zero_share() {
     token_admin.mint(&payer, &100);
     let recipients = vec![&env, r1, r2];
     let shares = vec![&env, 0u32, 1u32];
-    let res = client.try_create(&payer, &token, &recipients, &shares, &100);
+    let res = client.try_create(&payer, &token, &recipients, &shares, &100, &0);
     assert!(res.is_err());
 }
 
@@ -146,7 +146,7 @@ fn rejects_duplicate_recipients() {
     token_admin.mint(&payer, &100);
     let recipients = vec![&env, r1.clone(), r1];
     let shares = vec![&env, 1u32, 1u32];
-    let res = client.try_create(&payer, &token, &recipients, &shares, &100);
+    let res = client.try_create(&payer, &token, &recipients, &shares, &100, &0);
     assert!(res.is_err());
 }
 
@@ -157,7 +157,7 @@ fn rejects_negative_amount() {
     token_admin.mint(&payer, &100);
     let recipients = vec![&env, r1, r2];
     let shares = vec![&env, 1u32, 1u32];
-    let res = client.try_create(&payer, &token, &recipients, &shares, &-5);
+    let res = client.try_create(&payer, &token, &recipients, &shares, &-5, &0);
     assert!(res.is_err());
 }
 
@@ -168,7 +168,7 @@ fn single_recipient_gets_full_amount() {
     token_admin.mint(&payer, &777);
     let recipients = vec![&env, r1.clone()];
     let shares = vec![&env, 1u32];
-    let id = client.create(&payer, &token, &recipients, &shares, &777);
+    let id = client.create(&payer, &token, &recipients, &shares, &777, &0);
     client.release(&id);
     assert_eq!(token_client.balance(&r1), 777);
     let escrow = contract;
@@ -189,7 +189,7 @@ fn refund_after_release_is_blocked() {
     token_admin.mint(&payer, &100);
     let recipients = vec![&env, r1, r2];
     let shares = vec![&env, 1u32, 1u32];
-    let id = client.create(&payer, &token, &recipients, &shares, &100);
+    let id = client.create(&payer, &token, &recipients, &shares, &100, &0);
     client.release(&id);
     let res = client.try_refund(&id);
     assert!(res.is_err());
@@ -202,9 +202,9 @@ fn counter_is_monotonic() {
     token_admin.mint(&payer, &300);
     let recipients = vec![&env, r1, r2];
     let shares = vec![&env, 1u32, 1u32];
-    let a = client.create(&payer, &token, &recipients, &shares, &100);
-    let b = client.create(&payer, &token, &recipients, &shares, &100);
-    let c = client.create(&payer, &token, &recipients, &shares, &100);
+    let a = client.create(&payer, &token, &recipients, &shares, &100, &0);
+    let b = client.create(&payer, &token, &recipients, &shares, &100, &0);
+    let c = client.create(&payer, &token, &recipients, &shares, &100, &0);
     assert!(a < b && b < c);
     assert_eq!(client.payment_count(), 3);
 }
@@ -216,8 +216,8 @@ fn stats_reports_count_and_volume() {
     token_admin.mint(&payer, &300);
     let recipients = vec![&env, r1, r2];
     let shares = vec![&env, 1u32, 1u32];
-    client.create(&payer, &token, &recipients, &shares, &100);
-    client.create(&payer, &token, &recipients, &shares, &200);
+    client.create(&payer, &token, &recipients, &shares, &100, &0);
+    client.create(&payer, &token, &recipients, &shares, &200, &0);
     let s = client.stats();
     assert_eq!(s.count, 2);
     assert_eq!(s.volume, 300);
@@ -230,7 +230,7 @@ fn emits_created_event() {
     token_admin.mint(&payer, &100);
     let recipients = vec![&env, r1, r2];
     let shares = vec![&env, 1u32, 1u32];
-    let id = client.create(&payer, &token, &recipients, &shares, &100);
+    let id = client.create(&payer, &token, &recipients, &shares, &100, &0);
     // If we got here without panicking, the create-path events fired and the
     // payment exists with escrow recorded below.
     let p = client.get(&id);
@@ -245,6 +245,60 @@ fn created_at_is_recorded() {
     env.ledger().set_timestamp(1_700_000_000);
     let recipients = vec![&env, r1, r2];
     let shares = vec![&env, 1u32, 1u32];
-    let id = client.create(&payer, &token, &recipients, &shares, &100);
+    let id = client.create(&payer, &token, &recipients, &shares, &100, &0);
     assert_eq!(client.get(&id).created_at, 1_700_000_000);
+}
+
+#[test]
+fn cancel_refunds_payer() {
+    let (env, client, _contract, admin, payer, r1, r2) = setup();
+    let (token, token_client, token_admin) = create_token(&env, &admin);
+    token_admin.mint(&payer, &100);
+    let recipients = vec![&env, r1, r2];
+    let shares = vec![&env, 1u32, 1u32];
+    let id = client.create(&payer, &token, &recipients, &shares, &100, &0);
+    client.cancel(&id);
+    let p = client.get(&id);
+    assert!(p.refunded);
+    assert_eq!(token_client.balance(&payer), 100);
+}
+
+#[test]
+#[should_panic(expected = "payment already settled")]
+fn cannot_cancel_after_release() {
+    let (env, client, _contract, admin, payer, r1, r2) = setup();
+    let (token, _tc, token_admin) = create_token(&env, &admin);
+    token_admin.mint(&payer, &100);
+    let recipients = vec![&env, r1, r2];
+    let shares = vec![&env, 1u32, 1u32];
+    let id = client.create(&payer, &token, &recipients, &shares, &100, &0);
+    client.release(&id);
+    client.cancel(&id);
+}
+
+#[test]
+fn refund_after_deadline_allowed_by_anyone() {
+    let (env, client, _contract, admin, payer, r1, r2) = setup();
+    let (token, token_client, token_admin) = create_token(&env, &admin);
+    token_admin.mint(&payer, &100);
+    let recipients = vec![&env, r1, r2];
+    let shares = vec![&env, 1u32, 1u32];
+    let id = client.create(&payer, &token, &recipients, &shares, &100, &1_000);
+    // Advance ledger past the deadline; refund no longer requires payer auth.
+    env.ledger().set_timestamp(1_000);
+    client.refund(&id);
+    let p = client.get(&id);
+    assert!(p.refunded);
+    assert_eq!(token_client.balance(&payer), 100);
+}
+
+#[test]
+fn deadline_is_stored() {
+    let (env, client, _contract, admin, payer, r1, r2) = setup();
+    let (token, _tc, token_admin) = create_token(&env, &admin);
+    token_admin.mint(&payer, &100);
+    let recipients = vec![&env, r1, r2];
+    let shares = vec![&env, 1u32, 1u32];
+    let id = client.create(&payer, &token, &recipients, &shares, &100, &1_234);
+    assert_eq!(client.get(&id).deadline, 1_234);
 }

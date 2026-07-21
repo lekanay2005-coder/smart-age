@@ -14,7 +14,7 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: wasm32-unknown-unknown
+          targets: wasm32v1-none
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
         with:
@@ -26,15 +26,15 @@ jobs:
       - name: Test
         run: cd contracts && cargo test
       - name: Build wasm
-        run: cd contracts && cargo build --target wasm32-unknown-unknown --release
+        run: cd contracts && cargo build --target wasm32v1-none --release
       - name: Upload wasm
         uses: actions/upload-artifact@v4
         with:
           name: stellar_dapp_contract.wasm
-          path: contracts/target/wasm32-unknown-unknown/release/stellar_dapp_contract.wasm
+          path: contracts/target/wasm32v1-none/release/stellar_dapp_contract.wasm
       - name: Wasm size check
         run: |
-          SIZE=$(stat -c%s contracts/target/wasm32-unknown-unknown/release/stellar_dapp_contract.wasm)
+          SIZE=$(stat -c%s contracts/target/wasm32v1-none/release/stellar_dapp_contract.wasm)
           echo "wasm size: $SIZE bytes"
           MAX=200000
           if [ "$SIZE" -gt "$MAX" ]; then

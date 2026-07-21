@@ -35,11 +35,11 @@ if [ "${ALLOW_MAINNET:-0}" != "1" ] && [ "$NETWORK" = "mainnet" ]; then
   exit 1
 fi
 
-WASM="${WASM_PATH:-contracts/target/wasm32-unknown-unknown/release/stellar_dapp_contract.wasm}"
+WASM="${WASM_PATH:-contracts/target/wasm32v1-none/release/stellar_dapp_contract.wasm}"
 
 if [ ! -f "$WASM" ]; then
   echo "WASM not found at $WASM. Building contract first..."
-  (cd contracts && cargo build --target wasm32-unknown-unknown --release)
+  (cd contracts && cargo build --target wasm32v1-none --release)
 fi
 
 ACCOUNT="${STELLAR_ACCOUNT:-testnet account}"

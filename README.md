@@ -109,14 +109,14 @@ and queryable:
 ### Contracts
 ```bash
 cd contracts
-cargo build --target wasm32-unknown-unknown --release
+cargo build --target wasm32v1-none --release
 cargo test
 ```
 > Note: `soroban-env-host 23.0.1` pulls a broken `ed25519-dalek 3.0.0`.
 > `Cargo.toml` pins a working `ed25519-dalek` via a `[patch.crates-io]` git
 > source. Keep that patch when updating dependencies.
 >
-> WASM output: `contracts/target/wasm32-unknown-unknown/release/stellar_dapp_contract.wasm`
+> WASM output: `contracts/target/wasm32v1-none/release/stellar_dapp_contract.wasm`
 
 ### Frontend
 ```bash
@@ -156,7 +156,7 @@ contract id, and writes it to `.contract/<network>.id`.
 6. The indexer picks up the payment and serves it via the REST API.
 
 ## Tech stack
-- **Contracts:** Rust, Soroban SDK 23, `wasm32-unknown-unknown`
+- **Contracts:** Rust, Soroban SDK 27, `wasm32v1-none`
 - **Frontend:** React 18, Vite 5, TypeScript, `@stellar/stellar-sdk` 13
 - **Wallet:** Freighter
 - **Backend:** Node 20, Express, SQLite (`better-sqlite3`), `@stellar/stellar-sdk`

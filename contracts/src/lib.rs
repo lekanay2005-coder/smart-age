@@ -56,6 +56,10 @@ impl core::fmt::Display for Error {
 /// Maximum number of recipients per payment (bounds gas/calldata).
 const MAX_RECIPIENTS: u32 = 50;
 
+/// Default deadline (seconds) after which an unreleased payment can be
+/// auto-refunded by anyone. 0 means "no deadline" for this deployment.
+const DEFAULT_DEADLINE_SECS: u64 = 0;
+
 /// A payment intent held in escrow until released or refunded.
 #[contracttype]
 pub struct Payment {
@@ -70,6 +74,9 @@ pub struct Payment {
     pub created_at: u64,
     /// Ledger timestamp of the last settle (release/refund), 0 if unset.
     pub updated_at: u64,
+    /// Ledger timestamp after which an unreleased payment may be refunded.
+    /// 0 means "no deadline" (only the payer can refund).
+    pub deadline: u64,
 }
 
 /// Aggregate statistics returned by `stats()`.
@@ -103,6 +110,10 @@ impl Payments {
     ///
     /// Guards: non-empty recipients, equal lengths, positive amount, all
     /// shares > 0, no duplicate recipients, and at most `MAX_RECIPIENTS`.
+    ///
+    /// `deadline` is an optional ledger timestamp (seconds). If 0, the payment
+    /// never auto-expires and only the payer may refund. If set, anyone may
+    /// refund after that time via `refund` (#60).
     pub fn create(
         env: Env,
         payer: Address,
@@ -110,10 +121,16 @@ impl Payments {
         recipients: Vec<Address>,
         shares: Vec<u32>,
         amount: i128,
+        deadline: u64,
     ) -> u64 {
         payer.require_auth();
 
         validate_inputs(&env, &recipients, &shares, amount);
+        let deadline = if deadline == 0 {
+            DEFAULT_DEADLINE_SECS
+        } else {
+            deadline
+        };
 
         let mut counter: u64 = env.storage().instance().get(&DataKey::Counter).unwrap_or(0);
         counter += 1;
@@ -129,6 +146,7 @@ impl Payments {
             refunded: false,
             created_at: now,
             updated_at: 0,
+            deadline,
         };
         env.storage()
             .instance()
@@ -203,10 +221,18 @@ impl Payments {
         Symbol::new(&env, "released")
     }
 
-    /// Refund the full amount back to the payer. Only the payer can refund.
+    /// Refund the full amount back to the payer.
+    ///
+    /// Before the optional `deadline`, only the payer may refund. After the
+    /// deadline has passed (and the payment is still escrowed), *anyone* may
+    /// trigger the refund — this is the auto-refund safety net (#60).
     pub fn refund(env: Env, payment_id: u64) -> Symbol {
         let mut payment: Payment = load_payment(&env, payment_id);
-        payment.payer.require_auth();
+
+        let past_deadline = payment.deadline != 0 && env.ledger().timestamp() >= payment.deadline;
+        if !past_deadline {
+            payment.payer.require_auth();
+        }
 
         if payment.released || payment.refunded {
             panic!("{}", Error::AlreadySettled);
@@ -231,6 +257,39 @@ impl Payments {
         );
 
         Symbol::new(&env, "refunded")
+    }
+
+    /// Cancel an escrowed (unreleased, unrefunded) payment and refund the payer.
+    /// `cancel` is identical to `refund` but is restricted to the payer even
+    /// after a deadline, giving the payer an explicit "void this payment" action
+    /// distinct from the time-based auto-refund (#58).
+    pub fn cancel(env: Env, payment_id: u64) -> Symbol {
+        let mut payment: Payment = load_payment(&env, payment_id);
+        payment.payer.require_auth();
+
+        if payment.released || payment.refunded {
+            panic!("{}", Error::AlreadySettled);
+        }
+
+        TokenClient::new(&env, &payment.token).transfer(
+            &env.current_contract_address(),
+            &payment.payer,
+            &payment.amount,
+        );
+
+        payment.refunded = true;
+        payment.updated_at = env.ledger().timestamp();
+        env.storage()
+            .instance()
+            .set(&DataKey::Payment(payment_id), &payment);
+
+        #[allow(deprecated)]
+        env.events().publish(
+            (Symbol::new(&env, "cancelled"), payment_id),
+            payment.refunded,
+        );
+
+        Symbol::new(&env, "cancelled")
     }
 
     /// Read a payment's current state.
