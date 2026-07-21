@@ -28,7 +28,7 @@ jobs:
       - name: Build wasm
         run: cd contracts && cargo build --target wasm32v1-none --release
       - name: Upload wasm
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: stellar_dapp_contract.wasm
           path: contracts/target/wasm32v1-none/release/stellar_dapp_contract.wasm
