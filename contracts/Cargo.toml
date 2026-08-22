@@ -14,10 +14,10 @@ doctest = false
 #   cargo build --target wasm32v1-none --release
 
 [dependencies]
-soroban-sdk = "=27.0.1"
+soroban-sdk = "=27.0.6"
 
 [dev-dependencies]
-soroban-sdk = { version = "=27.0.1", features = ["testutils"] }
+soroban-sdk = { version = "=27.0.6", features = ["testutils"] }
 
 # NOTE: soroban-env-host 23.0.1 pulled a broken ed25519-dalek 3.0.0.
 # The ed25519-dalek issue may be resolved in newer versions, but keep this
